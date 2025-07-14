@@ -613,3 +613,58 @@ pip install submodules\simple-knn
 - *Wait, but ```<insert feature>``` isn't optimized and could be much better?* There are several parts we didn't even have time to think about improving (yet). The performance you get with this prototype is probably a rather slow baseline for what is physically possible.
 
 - *Something is broken, how did this happen?* We tried hard to provide a solid and comprehensible basis to make use of the paper's method. We have refactored the code quite a bit, but we have limited capacity to test all possible usage scenarios. Thus, if part of the website, the code or the performance is lacking, please create an issue. If we find the time, we will do our best to address it.
+
+
+## Setting
+https://github.com/graphdeco-inria/gaussian-splatting/issues/332 참고함.
+
+환경 변수 세팅
+CUDA_PATH = CUDA_HOME = CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7
+set PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7\bin;%PATH%
+
+conda create -n gaussian_splatting python=3.7
+conda activate 3dgs
+conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia
+
+pip install submodules/diff-gaussian-rasterization
+pip install submodules/simple-knn
+pip install submodules/fused-ssim
+
+pip install plyfile
+pip install tqdm
+
+## Training
+1. Blender dataset
+(ex) hotdog
+  data/nerf_synthetic/hotdog 에
+    - test폴더, train폴더 (from original dataset)
+    - transform_test.json, transform_traing.json (from original dataset)
+
+  >python train.py -s data/nerf_synthetic/hotdog -m output/hotdog
+
+2. COLMAP dataset
+https://mobuk.tistory.com/163 참고함.
+(ex) truck
+  data/colmap/truck 에
+    - images 폴더 (from original dataset)
+    - sparse/0에 cameras.bin, images.bin, points3D.bin (from COLMAP software) : images.bin은 왜 필요한지 모르겠는데 필요함.
+  
+  >python train.py -s data/colmap/truck -m output/truck
+
+- 두 종류의 dataset 모두 training 후에 points3D.ply 파일이 data 폴더 측에 생김.
+
+## SIBR_viewers
+1. cmake
+  - eigen3, embree3가 cmake 돌릴 때 제대로 다운이 안되는 경우 (원인은 모르겠음)
+    => SIBR_viewers/extlibs의 eigen3, embree3의 각 Win3rdPartyUrl 파일의 링크에서 직접 다운 받기
+    => 압축 해제 후 cmake 다시 돌려야 함.
+  - ffmpeg도 위와 마찬가지로 해결 가능.
+
+  >cmake -B build -G "Visual Studio 16 2019" .
+
+2. 빌드
+  >cmake --build build --target install --config RelWithDebInfo
+
+3. 실행
+  >.\install\bin\SIBR_gaussianViewer_app_d.exe -m ..\output\hotdog
+  >.\install\bin\SIBR_gaussianViewer_app_d.exe -m ..\output\truck
