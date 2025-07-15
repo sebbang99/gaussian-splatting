@@ -619,7 +619,7 @@ pip install submodules\simple-knn
 https://github.com/graphdeco-inria/gaussian-splatting/issues/332 참고함.
 
 환경 변수 세팅
-CUDA_PATH = CUDA_HOME = CUDA_HOME=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7
+CUDA_PATH = CUDA_HOME =C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7
 set PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7\bin;%PATH%
 
 conda create -n gaussian_splatting python=3.7
@@ -653,6 +653,15 @@ https://mobuk.tistory.com/163 참고함.
 
 - 두 종류의 dataset 모두 training 후에 points3D.ply 파일이 data 폴더 측에 생김.
 
+(ex) makeup scene의 frame 1
+  data/immersive/real/makeup/frame1 에
+    - images 폴더 (from original dataset)
+    - sparse/0에 cameras.bin, images.bin, points3D.bin (from COLMAP software) : images.bin은 왜 필요한지 모르겠는데 필요함.
+  
+  >python train.py -s data/immersive/real/makeup/frame1 -m output/makeup/frame1
+
+- 두 종류의 dataset 모두 training 후에 points3D.ply 파일이 data 폴더 측에 생김.
+
 ## SIBR_viewers
 1. cmake
   - eigen3, embree3가 cmake 돌릴 때 제대로 다운이 안되는 경우 (원인은 모르겠음)
@@ -666,5 +675,15 @@ https://mobuk.tistory.com/163 참고함.
   >cmake --build build --target install --config RelWithDebInfo
 
 3. 실행
-  >.\install\bin\SIBR_gaussianViewer_app_d.exe -m ..\output\hotdog
-  >.\install\bin\SIBR_gaussianViewer_app_d.exe -m ..\output\truck
+  - SIBR_viewers 폴더로 이동해서,
+    >.\install\bin\SIBR_gaussianViewer_app_d.exe -m ..\output\hotdog
+    >.\install\bin\SIBR_gaussianViewer_app_d.exe -m ..\output\truck
+    >.\install\bin\SIBR_gaussianViewer_app_d.exe -m ..\output\makeup\frame1
+
+## Immersive data 가공
+1. yuv to jpg (손실 O)
+  - export_to_jpg.bat 을 통해 각 yuv파일을 frame 단위로 쪼개고(views 폴더), frame별로 재분류함(frames 폴더).
+
+2. yuv to png (손실 X)
+  - export_to_png.bat로 동일하게 함.
+  - jpg보다 오래 걸림..
